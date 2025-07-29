@@ -4,9 +4,16 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PostCommentModule } from './modules/post.comment/post.comment.module';
+import { PostModule } from './modules/post/post.module';
+import { PostCategoryModule } from './modules/post.category/post.category.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({isGlobal: true}), UsersModule,
+  imports: [ConfigModule.forRoot({isGlobal: true}), 
+    PostModule,
+    PostCommentModule,
+    PostCategoryModule,
+    UsersModule,
     MongooseModule.forRootAsync({
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService) => ({
