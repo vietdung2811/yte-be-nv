@@ -23,8 +23,8 @@ export class User {
   @Prop()
   createdAt: Date;
 
-  @Prop()
-  isDoctor: false;
+  @Prop({ default: false })
+  isDoctor: boolean;
 
   @Prop()
   socialId: string;
