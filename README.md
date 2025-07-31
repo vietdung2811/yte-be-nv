@@ -31,7 +31,7 @@ $ /posts/category/:id (get post by cat) ấn vào 1 category bất kì trong tra
 $ /posts/category/count/:id (count post by cat) danh mục trong trang kiến thức
 $ /posts/latest/3 (3 newest post) bài viết mới nhất trong trang kiến thức
 $ /posts/:id (get post by id) khi chọn 1 bài viết trong trang kiến thức hoặc mấy trang filter
-$ /posts/:id/comments (post cmt by post_id) mục cmt dưới bài viết bất kì
+$ /posts/:id/comments (name, email, phone, content) (post, get cmt by post_id) mục cmt dưới bài viết bất kì 
 ```
 ## Project setup
 

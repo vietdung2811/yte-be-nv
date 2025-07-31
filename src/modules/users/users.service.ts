@@ -1,5 +1,8 @@
-// user.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
@@ -12,7 +15,30 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
+  /**
+   * Tạo mới user hoặc cập nhật lịch hẹn nếu đã tồn tại.
+   * Logic:
+   * - Nếu user chưa có → tạo mới
+   * - Nếu user đã có và có appointmentDate → cập nhật
+   * - Nếu user đã có và không có appointmentDate → báo lỗi
+   */
   async create(createUserDto: CreateUserDto): Promise<User> {
+    const { email, phone, appointmentDate } = createUserDto;
+
+    const existingUser = await this.userModel.findOne({
+      $or: [{ email }, { phone }],
+    });
+
+    if (existingUser) {
+      if (appointmentDate) {
+        existingUser.appointmentDate = appointmentDate;
+        return existingUser.save();
+      }
+      throw new BadRequestException(
+        'User already exists and no appointment was provided',
+      );
+    }
+
     const newUser = new this.userModel(createUserDto);
     return newUser.save();
   }
