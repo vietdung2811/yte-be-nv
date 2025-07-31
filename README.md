@@ -25,12 +25,12 @@
 
 api for use:
 ```bash
-$ /users (new user)
-$ /posts (get all post)
-$ /posts/category/:id (get post by cat)
-$ /posts/category/count/:id (count post by cat)
-$ /posts/latest/3 (3 newest post)
-$ /posts/:id (get post by id)
+$ /users (new user) liên hệ, đặt lịch khám
+$ /posts (get all post) kiến thức
+$ /posts/category/:id (get post by cat) ấn vào 1 category bất kì trong trang kiến thức, bài đăng
+$ /posts/category/count/:id (count post by cat) danh mục trong trang kiến thức
+$ /posts/latest/3 (3 newest post) bài viết mới nhất trong trang kiến thức
+$ /posts/:id (get post by id) khi chọn 1 bài viết trong trang kiến thức hoặc mấy trang filter
 ```
 ## Project setup
 
