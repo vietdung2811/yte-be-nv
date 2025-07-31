@@ -30,6 +30,9 @@ export class PostService {
   async findByCategory(category_id: number): Promise<Post[]> {
   return this.postModel.find({ category_id }).exec();
 }
+  async countByCategory(category_id: number): Promise<number> {
+    return this.postModel.countDocuments({ category_id }).exec();
+  }
 
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {

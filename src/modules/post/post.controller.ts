@@ -18,6 +18,10 @@ export class PostController {
   }
 
 
+  @Get('category/count/:id')
+countByCategory(@Param('id') id: string) {
+  return this.postService.countByCategory(+id);
+}
   @Get('category/:id')
   findByCategory(@Param('id') id: number) {
     return this.postService.findByCategory(+id); // Ép về number nếu categoryId là số
