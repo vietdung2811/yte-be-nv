@@ -24,12 +24,14 @@
 ## Description
 
 api for use:
+```bash
 $ /users (new user)
 $ /posts (get all post)
 $ /posts/category/:id (get post by cat)
 $ /posts/category/count/:id (count post by cat)
 $ /posts/latest/3 (3 newest post)
 $ /posts/:id (get post by id)
+```
 ## Project setup
 
 ```bash
