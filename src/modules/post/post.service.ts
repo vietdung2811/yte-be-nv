@@ -21,22 +21,29 @@ export class PostService {
     return this.postModel.find().sort({ createdAt: -1 }).exec();
   }
 
-  async findOne(id: string): Promise<Post> {
+  async findOne(id: number): Promise<Post> {
     const post = await this.postModel.findById(id).exec();
     if (!post) throw new NotFoundException(`Post #${id} not found`);
     return post;
-  }
+  }//api placeholder
 
-  async update(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
+  async findByCategory(category_id: number): Promise<Post[]> {
+  return this.postModel.find({ category_id }).exec();
+}
+
+
+  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
     const updated = await this.postModel.findByIdAndUpdate(id, updatePostDto, {
       new: true,
     });
     if (!updated) throw new NotFoundException(`Post #${id} not found`);
     return updated;
-  }
+  }//api placeholder
 
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     const res = await this.postModel.findByIdAndDelete(id);
     if (!res) throw new NotFoundException(`Post #${id} not found`);
-  }
-}
+  }//api placeholder
+
+} 
+

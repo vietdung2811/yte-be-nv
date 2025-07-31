@@ -16,6 +16,9 @@ export class Post {
 
   @Prop()
   createdAt: Date;
+
+  @Prop()
+  categoryId: number;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
