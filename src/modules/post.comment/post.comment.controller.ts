@@ -1,34 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PostCommentService } from './post.comment.service';
-import { CreatePostCommentDto } from './dto/create-post.comment.dto';
-import { UpdatePostCommentDto } from './dto/update-post.comment.dto';
+import { Controller, Post, Body, Param, Get } from '@nestjs/common';
+import { CommentService } from './post.comment.service';
+import { CreateCommentDto } from './dto/create-post.comment.dto';
 
-@Controller('post.comment')
-export class PostCommentController {
-  constructor(private readonly postCommentService: PostCommentService) {}
+@Controller('posts/:postId/comments')
+export class CommentController {
+  constructor(private readonly commentService: CommentService) {}
 
   @Post()
-  create(@Body() createPostCommentDto: CreatePostCommentDto) {
-    return this.postCommentService.create(createPostCommentDto);
-  }
+create(@Param('postId') postId: string, @Body() dto: CreateCommentDto) {
+  return this.commentService.create(+postId, dto); // 👈 ép về number ở đây luôn
+}
 
-  @Get()
-  findAll() {
-    return this.postCommentService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postCommentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostCommentDto: UpdatePostCommentDto) {
-    return this.postCommentService.update(+id, updatePostCommentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postCommentService.remove(+id);
-  }
+@Get()
+findByPost(@Param('postId') postId: string) {
+  return this.commentService.findByPost(+postId); // 👈 ép ở đây luôn cho chắc
+}
 }
