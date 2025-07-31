@@ -33,7 +33,10 @@ export class PostService {
   async countByCategory(category_id: number): Promise<number> {
     return this.postModel.countDocuments({ category_id }).exec();
   }
-
+  
+  async getLatestThree(): Promise<Post[]> {
+    return this.postModel.find().sort({ createdAt: -1 }).limit(3).exec();
+  }
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
     const updated = await this.postModel.findByIdAndUpdate(id, updatePostDto, {

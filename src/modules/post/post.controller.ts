@@ -41,4 +41,9 @@ countByCategory(@Param('id') id: string) {
   remove(@Param('id') id: string) {
     return this.postService.remove(+id);
   }
+
+  @Get('latest/3')
+getLatestThree() {
+  return this.postService.getLatestThree();
+}
 }
