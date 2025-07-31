@@ -5,6 +5,10 @@ export type PostDocument = HydratedDocument<Post>;
 
 @Schema({ collection: 'post', timestamps: true }) 
 export class Post {
+
+  @Prop({ type: Number })
+  _id: number;
+
   @Prop()
   name: string;
 

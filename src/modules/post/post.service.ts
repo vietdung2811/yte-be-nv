@@ -22,10 +22,10 @@ export class PostService {
   }
 
   async findOne(id: number): Promise<Post> {
-    const post = await this.postModel.findById(id).exec();
-    if (!post) throw new NotFoundException(`Post #${id} not found`);
+    const post = await this.postModel.findOne({ _id: id }).exec();
+    if (!post) throw new NotFoundException(`Post with ID ${id} not found`);
     return post;
-  }//api placeholder
+  }
 
   async findByCategory(category_id: number): Promise<Post[]> {
   return this.postModel.find({ category_id }).exec();

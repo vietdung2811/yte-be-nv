@@ -17,9 +17,13 @@ export class PostController {
     return this.postService.findAll();
   }
 
+ @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.postService.findOne(+id); // Ép sang number vì _id là number
+  }
 
   @Get('category/count/:id')
-countByCategory(@Param('id') id: string) {
+  countByCategory(@Param('id') id: string) {
   return this.postService.countByCategory(+id);
 }
   @Get('category/:id')
@@ -27,10 +31,6 @@ countByCategory(@Param('id') id: string) {
     return this.postService.findByCategory(+id); // Ép về number nếu categoryId là số
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id);
-  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
