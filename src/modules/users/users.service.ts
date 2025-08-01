@@ -31,7 +31,7 @@ export class UserService {
 
     if (existingUser) {
       if (appointmentDate) {
-        existingUser.appointmentDate = appointmentDate;
+        existingUser.appointmentDate = new Date(appointmentDate);
         return existingUser.save();
       }
       throw new BadRequestException(
