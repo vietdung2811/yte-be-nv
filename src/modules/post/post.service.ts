@@ -11,9 +11,8 @@ export class PostService {
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
-    const newPost = new this.postModel(createPostDto);
-    return newPost.save();
-  }
+    return this.postModel.create(createPostDto);
+}
 
   async findAll(): Promise<Post[]> {
     return this.postModel.find().sort({ createdAt: -1 }).exec();

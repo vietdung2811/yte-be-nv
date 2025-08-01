@@ -20,26 +20,25 @@ export class UserService {
    * - Nếu user đã có và có appointmentDate → cập nhật
    * - Nếu user đã có và không có appointmentDate → báo lỗi
    */
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const { email, phone, appointmentDate } = createUserDto;
+async create(createUserDto: CreateUserDto): Promise<User> {
+  const { email, phone, appointmentDate } = createUserDto;
 
-    const existingUser = await this.userModel.findOne({
-      $or: [{ email }, { phone }],
-    });
+  const existingUser = await this.userModel.findOne({
+    $or: [{ email }, { phone }],
+  });
 
-    if (existingUser) {
-      if (appointmentDate) {
-        existingUser.appointmentDate = new Date(appointmentDate);
-        return existingUser.save();
-      }
-      throw new BadRequestException(
-        'User already exists and no appointment was provided',
-      );
+  if (existingUser) {
+    if (appointmentDate) {
+      existingUser.appointmentDate = new Date(appointmentDate);
+      return existingUser.save();
     }
-
-    const newUser = new this.userModel(createUserDto);
-    return newUser.save();
+    throw new BadRequestException(
+      'User already exists and no appointment was provided',
+    );
   }
+
+  return this.userModel.create(createUserDto); 
+}
 
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
