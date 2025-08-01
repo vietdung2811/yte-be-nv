@@ -35,7 +35,10 @@ export class CommentService {
     }
 
     // 4. Tự tăng _id (vì bạn dùng number)
-    const lastComment = await this.commentModel.findOne().sort({ _id: -1 }).exec();
+    const lastComment = await this.commentModel
+      .findOne()
+      .sort({ _id: -1 })
+      .exec();
     const nextId = lastComment ? (lastComment as Comment)._id + 1 : 1;
 
     // 5. Tạo comment mới

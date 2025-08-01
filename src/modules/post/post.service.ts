@@ -8,9 +8,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostService {
-  constructor(
-    @InjectModel(Post.name) private postModel: Model<PostDocument>,
-  ) {}
+  constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
     const newPost = new this.postModel(createPostDto);
@@ -28,12 +26,12 @@ export class PostService {
   }
 
   async findByCategory(category_id: number): Promise<Post[]> {
-  return this.postModel.find({ category_id }).exec();
-}
+    return this.postModel.find({ category_id }).exec();
+  }
   async countByCategory(category_id: number): Promise<number> {
     return this.postModel.countDocuments({ category_id }).exec();
   }
-  
+
   async getLatestThree(): Promise<Post[]> {
     return this.postModel.find().sort({ createdAt: -1 }).limit(3).exec();
   }
@@ -44,12 +42,10 @@ export class PostService {
     });
     if (!updated) throw new NotFoundException(`Post #${id} not found`);
     return updated;
-  }//api placeholder
+  } //api placeholder
 
   async remove(id: number): Promise<void> {
     const res = await this.postModel.findByIdAndDelete(id);
     if (!res) throw new NotFoundException(`Post #${id} not found`);
-  }//api placeholder
-
-} 
-
+  } //api placeholder
+}

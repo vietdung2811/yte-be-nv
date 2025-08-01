@@ -9,18 +9,19 @@ import { PostModule } from './modules/post/post.module';
 import { PostCategoryModule } from './modules/post.category/post.category.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({isGlobal: true}), 
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     PostModule,
     PostCommentModule,
     PostCategoryModule,
     UserModule,
     MongooseModule.forRootAsync({
-  imports: [ConfigModule],
-  useFactory: async (configService: ConfigService) => ({
-    uri: configService.get<string>('MONGODB_URI'),
-  }),
-  inject: [ConfigService],
-})
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

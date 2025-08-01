@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -17,20 +25,19 @@ export class PostController {
     return this.postService.findAll();
   }
 
- @Get(':id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postService.findOne(+id); // Ép sang number vì _id là number
   }
 
   @Get('category/count/:id')
   countByCategory(@Param('id') id: string) {
-  return this.postService.countByCategory(+id);
-}
+    return this.postService.countByCategory(+id);
+  }
   @Get('category/:id')
   findByCategory(@Param('id') id: number) {
     return this.postService.findByCategory(+id); // Ép về number nếu categoryId là số
   }
-
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
@@ -43,7 +50,7 @@ export class PostController {
   }
 
   @Get('latest/3')
-getLatestThree() {
-  return this.postService.getLatestThree();
-}
+  getLatestThree() {
+    return this.postService.getLatestThree();
+  }
 }

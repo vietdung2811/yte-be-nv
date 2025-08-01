@@ -7,12 +7,12 @@ export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
-create(@Param('postId') postId: string, @Body() dto: CreateCommentDto) {
-  return this.commentService.create(+postId, dto); // 👈 ép về number ở đây luôn
-}
+  create(@Param('postId') postId: string, @Body() dto: CreateCommentDto) {
+    return this.commentService.create(+postId, dto); // 👈 ép về number ở đây luôn
+  }
 
-@Get()
-findByPost(@Param('postId') postId: string) {
-  return this.commentService.findByPost(+postId); // 👈 ép ở đây luôn cho chắc
-}
+  @Get()
+  findByPost(@Param('postId') postId: string) {
+    return this.commentService.findByPost(+postId); // 👈 ép ở đây luôn cho chắc
+  }
 }
