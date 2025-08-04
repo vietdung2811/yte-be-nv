@@ -12,7 +12,7 @@ export class PostService {
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
     return this.postModel.create(createPostDto);
-}
+  }
 
   async findAll(): Promise<Post[]> {
     return this.postModel.find().sort({ createdAt: -1 }).exec();

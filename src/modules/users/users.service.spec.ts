@@ -3,7 +3,6 @@
 // ✅ User đã tồn tại và có appointment	        Cập nhật lịch
 // ❌ User đã tồn tại, không có appointment	    Báo lỗi
 
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { UserService } from './users.service';
@@ -72,13 +71,13 @@ describe('UserService', () => {
 
   it('✅ should update appointmentDate if user exists and has appointmentDate', async () => {
     const existingUser = {
-    _id: userId,
-    ...userDto,
-    appointmentDate: new Date('2025-08-02'),
-    save: jest.fn().mockResolvedValue({
+      _id: userId,
+      ...userDto,
+      appointmentDate: new Date('2025-08-02'),
+      save: jest.fn().mockResolvedValue({
         ...userDto,
         appointmentDate: new Date('2025-08-10'),
-    }),
+      }),
     } as unknown as User;
 
     model.findOne.mockResolvedValue(existingUser);
@@ -93,11 +92,17 @@ describe('UserService', () => {
 
     expect(existingUser.appointmentDate).toEqual(new Date('2025-08-10'));
     expect((existingUser as any).save).toHaveBeenCalled();
-    expect(result).toEqual(expect.objectContaining({ appointmentDate: new Date('2025-08-10') }));
+    expect(result).toEqual(
+      expect.objectContaining({ appointmentDate: new Date('2025-08-10') }),
+    );
   });
 
   it('❌ should throw error if user exists without appointmentDate', async () => {
-    model.findOne.mockResolvedValue({ ...userDto, _id: userId, save: jest.fn() });
+    model.findOne.mockResolvedValue({
+      ...userDto,
+      _id: userId,
+      save: jest.fn(),
+    });
 
     await expect(
       service.create({ email: userDto.email, phone: userDto.phone } as any),

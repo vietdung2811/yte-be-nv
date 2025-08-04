@@ -10,18 +10,20 @@ describe('PostService (strict)', () => {
   let service: PostService;
   let model: jest.Mocked<Model<Post & Document>>;
 
-const mockPost = {
-  _id: 1,
-  name: 'Test Post',
-  author: 'Dvd',
-  content: 'Nội dung gì đó...',
-  createdAt: new Date(),
-  categoryId: 2,
-} as unknown as Post;
+  const mockPost = {
+    _id: 1,
+    name: 'Test Post',
+    author: 'Dvd',
+    content: 'Nội dung gì đó...',
+    createdAt: new Date(),
+    categoryId: 2,
+  } as unknown as Post;
 
   const mockPostArray = [mockPost];
 
-  const createMockPostModel = (): Partial<jest.Mocked<Model<Post & Document>>> => ({
+  const createMockPostModel = (): Partial<
+    jest.Mocked<Model<Post & Document>>
+  > => ({
     create: jest.fn(),
     find: jest.fn(),
     findOne: jest.fn(),
@@ -58,9 +60,9 @@ const mockPost = {
     };
 
     (model.create as jest.Mock).mockResolvedValue(mockPost);
-        const result = await service.create(dto);
-    
-        expect(model.create).toHaveBeenCalledWith(dto);
-        expect(result).toEqual(mockPost);
-      });
-    });
+    const result = await service.create(dto);
+
+    expect(model.create).toHaveBeenCalledWith(dto);
+    expect(result).toEqual(mockPost);
+  });
+});
