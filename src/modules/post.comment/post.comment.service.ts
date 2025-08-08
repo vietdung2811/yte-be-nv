@@ -1,61 +1,59 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Comment } from './schemas/post.comment.schema';
+import { Comment, CommentDocument } from './schemas/post.comment.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
+import { Post, PostDocument } from '../post/schemas/post.schema';
 import { CreateCommentDto } from './dto/create-post.comment.dto';
-import { User } from '../users/schemas/user.schema';
-import { Post } from '../post/schemas/post.schema';
 
 @Injectable()
 export class CommentService {
   constructor(
-    @InjectModel(Comment.name) private commentModel: Model<Comment>,
-    @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Post.name) private postModel: Model<Post>,
+    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
   ) {}
 
-  async create(postId: number, dto: CreateCommentDto) {
-    // 1. Kiểm tra post có tồn tại
-    const post = await this.postModel.findOne({ _id: Number(postId) });
-    if (!post) throw new NotFoundException('Post không tồn tại');
+  async create(postId: number, dto: CreateCommentDto): Promise<Comment> {
+    const postExists = await this.postModel.exists({ _id: postId });
+    if (!postExists) {
+      throw new NotFoundException(`Post ${postId} không tồn tại`);
+    }
 
-    // 2. Kiểm tra user theo email/phone
     let user = await this.userModel.findOne({
       $or: [{ email: dto.email }, { phone: dto.phone }],
     });
 
-    // 3. Nếu chưa có thì tạo mới
     if (!user) {
-      user = await this.userModel.create({
+      user = new this.userModel({
         name: dto.name,
         email: dto.email,
         phone: dto.phone,
-        address: 'N/A', // default nếu không có
       });
+      await user.save();
     }
 
-    // 4. Tự tăng _id (vì bạn dùng number)
-    const lastComment = await this.commentModel
-      .findOne()
-      .sort({ _id: -1 })
-      .exec();
-    const nextId = lastComment ? (lastComment as Comment)._id + 1 : 1;
-
-    // 5. Tạo comment mới
-    const newComment = await this.commentModel.create({
+    const comment = new this.commentModel({
       content: dto.content,
-      postId: Number(postId),
-      authorId: user._id,
+      postId,
+      authorId: user._id as Types.ObjectId,
     });
 
-    return newComment;
+    return comment.save();
   }
 
-  async findByPost(postId: number) {
+  async findAllByPost(postId: number): Promise<Comment[]> {
     return this.commentModel
-      .find({ postId: Number(postId) })
-      .populate('authorId', 'name email') // trả lại tên & email của người comment
-      .sort({ createdAt: -1 })
+      .find({ postId })
+      .populate('authorId', 'name email phone')
       .exec();
+  }
+
+  async delete(commentId: string): Promise<void> {
+    const comment = await this.commentModel.findById(commentId);
+    if (!comment) {
+      throw new NotFoundException('Comment không tồn tại');
+    }
+    await comment.deleteOne();
   }
 }

@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-@Schema({ timestamps: true })
-export class Comment extends Document {
-  declare _id: number; // 👈 override type _id
+export type CommentDocument = Comment & Document;
 
+@Schema({ timestamps: true })
+export class Comment {
   @Prop({ required: true })
   content: string;
 
