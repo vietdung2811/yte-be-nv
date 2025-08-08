@@ -42,6 +42,12 @@ export class PostController {
     return this.postService.findOne(id);
   }
 
+  @Get(':postId/categories')
+getCategories(@Param('postId') postId: string) {
+  return this.postService.findCategoriesByPostId(postId);
+}
+
+
   @Get()
   findAll() {
     return this.postService.findAll();

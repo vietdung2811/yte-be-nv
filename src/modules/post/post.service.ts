@@ -37,6 +37,19 @@ export class PostService {
     return posts;
   }
 
+  async findCategoriesByPostId(postId: string) {
+  const post = await this.postModel
+    .findById(postId)
+    .populate('category_id') // 👈 load thông tin chi tiết category
+    .exec();
+
+  if (!post) {
+    throw new NotFoundException(`Không tìm thấy post với id: ${postId}`);
+  }
+
+  return post.category_id; // Trả về danh sách categories của post
+}
+
   async countByCategory(category_id: string): Promise<number> {
     const count = await this.postModel
       .countDocuments({ category_id: category_id })

@@ -60,6 +60,30 @@ export class CommentService {
       .exec();
   }
 
+  async countCommentsByPostId(postId: string) {
+  const objectId = new Types.ObjectId(postId);
+
+  const result = await this.commentModel.aggregate([
+    { $match: { postId: objectId } },
+    {
+      $group: {
+        _id: '$postId',
+        totalComments: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        postId: '$_id',
+        totalComments: 1,
+      },
+    },
+  ]);
+
+  return result[0] || { postId, totalComments: 0 };
+}
+
+
   async delete(commentId: string): Promise<void> {
     const comment = await this.commentModel.findById(commentId);
     if (!comment) {
