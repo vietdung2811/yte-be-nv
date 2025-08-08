@@ -7,10 +7,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PostCommentModule } from './modules/post.comment/post.comment.module';
 import { PostModule } from './modules/post/post.module';
 import { PostCategoryModule } from './modules/post.category/post.category.module';
+import { NotificationModule } from './modules/notification/notification.module';
+
+
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    NotificationModule,
     PostModule,
     PostCommentModule,
     PostCategoryModule,
@@ -23,6 +27,7 @@ import { PostCategoryModule } from './modules/post.category/post.category.module
       }),
       inject: [ConfigService],
     }),
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
