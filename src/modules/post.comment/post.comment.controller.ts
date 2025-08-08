@@ -8,14 +8,14 @@ export class CommentController {
 
   @Post()
   create(
-    @Param('postId') postId: number,
+    @Param('postId') postId: string, // Đổi từ number sang string
     @Body() dto: CreateCommentDto,
   ) {
     return this.commentService.create(postId, dto);
   }
 
   @Get()
-  findAllByPost(@Param('postId') postId: number) {
+  findAllByPost(@Param('postId') postId: string) {
     return this.commentService.findAllByPost(postId);
   }
 
