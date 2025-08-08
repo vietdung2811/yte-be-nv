@@ -11,40 +11,47 @@ export class PostService {
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
-    return this.postModel.create(createPostDto);
+    const post = new this.postModel({
+      ...createPostDto,
+      created_at: new Date(),
+    });
+    return post.save();
   }
 
   async findAll(): Promise<Post[]> {
-    return this.postModel.find().sort({ createdAt: -1 }).exec();
+    return this.postModel.find().sort({ created_at: -1 }).exec();
   }
 
-  async findOne(id: number): Promise<Post> {
-    const post = await this.postModel.findOne({ _id: id }).exec();
+  async findOne(id: string): Promise<Post> {
+    const post = await this.postModel.findById(id).exec();
     if (!post) throw new NotFoundException(`Post with ID ${id} not found`);
     return post;
   }
 
-  async findByCategory(category_id: number): Promise<Post[]> {
-    return this.postModel.find({ category_id }).exec();
+  async findByCategory(category_id: string): Promise<Post[]> {
+    return this.postModel.find({ category_id: { $in: [category_id] } }).exec();
   }
-  async countByCategory(category_id: number): Promise<number> {
-    return this.postModel.countDocuments({ category_id }).exec();
+
+  async countByCategory(category_id: string): Promise<number> {
+    return this.postModel
+      .countDocuments({ category_id: { $in: [category_id] } })
+      .exec();
   }
 
   async getLatestThree(): Promise<Post[]> {
-    return this.postModel.find().sort({ createdAt: -1 }).limit(3).exec();
+    return this.postModel.find().sort({ created_at: -1 }).limit(3).exec();
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
+  async update(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
     const updated = await this.postModel.findByIdAndUpdate(id, updatePostDto, {
       new: true,
     });
     if (!updated) throw new NotFoundException(`Post #${id} not found`);
     return updated;
-  } //api placeholder
+  }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const res = await this.postModel.findByIdAndDelete(id);
     if (!res) throw new NotFoundException(`Post #${id} not found`);
-  } //api placeholder
+  }
 }

@@ -19,6 +19,7 @@ import { PostCategoryModule } from './modules/post.category/post.category.module
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
+        dbName: 'xepo'
       }),
       inject: [ConfigService],
     }),

@@ -11,7 +11,7 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
-@Controller('posts') // 👈 route prefix là /posts
+@Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
@@ -20,37 +20,38 @@ export class PostController {
     return this.postService.create(createPostDto);
   }
 
+  @Get('latest/3')
+  getLatestThree() {
+    return this.postService.getLatestThree();
+  }
+
+  @Get('category/count/:id')
+  countByCategory(@Param('id') id: string) {
+    return this.postService.countByCategory(id);
+  }
+
+  @Get('category/:id')
+  findByCategory(@Param('id') id: string) {
+    return this.postService.findByCategory(id);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.postService.findOne(id);
+  }
+
   @Get()
   findAll() {
     return this.postService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id); // Ép sang number vì _id là number
-  }
-
-  @Get('category/count/:id')
-  countByCategory(@Param('id') id: string) {
-    return this.postService.countByCategory(+id);
-  }
-  @Get('category/:id')
-  findByCategory(@Param('id') id: number) {
-    return this.postService.findByCategory(+id); // Ép về number nếu categoryId là số
-  }
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(+id, updatePostDto);
+    return this.postService.update(id, updatePostDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.postService.remove(+id);
-  }
-
-  @Get('latest/3')
-  getLatestThree() {
-    return this.postService.getLatestThree();
+    return this.postService.remove(id);
   }
 }

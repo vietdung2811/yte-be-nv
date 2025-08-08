@@ -3,13 +3,10 @@ import { HydratedDocument } from 'mongoose';
 
 export type PostDocument = HydratedDocument<Post>;
 
-@Schema({ collection: 'post', timestamps: true })
+@Schema({ collection: 'posts', timestamps: true })
 export class Post {
-  @Prop({ type: Number })
-  _id: number;
-
   @Prop()
-  name: string;
+  title: string; // Changed from 'name' to 'title' to match your data
 
   @Prop()
   author: string;
@@ -17,11 +14,11 @@ export class Post {
   @Prop()
   content: string;
 
-  @Prop()
-  createdAt: Date;
+  @Prop([String]) // Define as array of strings
+  category_id: string[]; // Changed from categoryId to category_id and made it an array
 
   @Prop()
-  categoryId: number;
+  created_at: Date; // Added created_at field
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
