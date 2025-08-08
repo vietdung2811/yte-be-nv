@@ -29,13 +29,20 @@ export class PostService {
   }
 
   async findByCategory(category_id: string): Promise<Post[]> {
-    return this.postModel.find({ category_id: { $in: [category_id] } }).exec();
+    const posts = await this.postModel
+      .find({ category_id: category_id })
+      .sort({ created_at: -1 })
+      .exec();
+    
+    return posts;
   }
 
   async countByCategory(category_id: string): Promise<number> {
-    return this.postModel
-      .countDocuments({ category_id: { $in: [category_id] } })
+    const count = await this.postModel
+      .countDocuments({ category_id: category_id })
       .exec();
+    
+    return count;
   }
 
   async getLatestThree(): Promise<Post[]> {

@@ -12,15 +12,15 @@ export class PostCategoryService {
     return `This action returns all postCategory`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} postCategory`;
   }
 
-  update(id: number, updatePostCategoryDto: UpdatePostCategoryDto) {
+  update(id: string, updatePostCategoryDto: UpdatePostCategoryDto) {
     return `This action updates a #${id} postCategory`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} postCategory`;
   }
 }

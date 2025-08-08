@@ -27,7 +27,7 @@ export class PostCategoryController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.postCategoryService.findOne(+id);
+    return this.postCategoryService.findOne(id);
   }
 
   @Patch(':id')
@@ -35,11 +35,11 @@ export class PostCategoryController {
     @Param('id') id: string,
     @Body() updatePostCategoryDto: UpdatePostCategoryDto,
   ) {
-    return this.postCategoryService.update(+id, updatePostCategoryDto);
+    return this.postCategoryService.update(id, updatePostCategoryDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.postCategoryService.remove(+id);
+    return this.postCategoryService.remove(id);
   }
 }
