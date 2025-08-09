@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+
 import { PostCategoryService } from './post.category.service';
 import { PostCategoryController } from './post.category.controller'; // 👈 nhớ import controller
-import { Category, CategorySchema } from './schemas/post.category.schema';
+import { PrismaService } from '../../prisma.service';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Category.name, schema: CategorySchema }]),
-  ],
   controllers: [PostCategoryController], // 👈 khai báo controller ở đây
-  providers: [PostCategoryService],
+  providers: [PostCategoryService, PrismaService],
   exports: [PostCategoryService], // tuỳ nếu dùng service ở module khác
 })
 export class PostCategoryModule {}

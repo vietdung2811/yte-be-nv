@@ -3,48 +3,63 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Notification, NotificationDocument } from './schemas/notification.schema';
+import { PrismaService } from '../../prisma.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 
 @Injectable()
 export class NotificationService {
-  constructor(
-    @InjectModel(Notification.name)
-    private readonly notificationModel: Model<NotificationDocument>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateNotificationDto) {
-    const exists = await this.notificationModel.findOne({ email: dto.email });
+    const exists = await this.prisma.notification.findUnique({
+      where: { email: dto.email },
+    });
     if (exists) {
       throw new ConflictException('Email already subscribed');
     }
-    return this.notificationModel.create(dto);
+    return this.prisma.notification.create({
+      data: {
+        email: dto.email,
+      },
+    });
   }
 
   async findAll() {
-    return this.notificationModel.find().exec();
+    return this.prisma.notification.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   async findOne(id: string) {
-    const found = await this.notificationModel.findById(id);
+    const found = await this.prisma.notification.findUnique({
+      where: { id },
+    });
     if (!found) throw new NotFoundException('Notification not found');
     return found;
   }
 
   async update(id: string, dto: UpdateNotificationDto) {
-    const updated = await this.notificationModel.findByIdAndUpdate(id, dto, {
-      new: true,
-    });
-    if (!updated) throw new NotFoundException('Notification not found');
-    return updated;
+    try {
+      return await this.prisma.notification.update({
+        where: { id },
+        data: {
+          email: dto.email,
+        },
+      });
+    } catch {
+      throw new NotFoundException('Notification not found');
+    }
   }
 
   async remove(id: string) {
-    const deleted = await this.notificationModel.findByIdAndDelete(id);
-    if (!deleted) throw new NotFoundException('Notification not found');
-    return { message: 'Deleted successfully' };
+    try {
+      await this.prisma.notification.delete({
+        where: { id },
+      });
+      return { message: 'Deleted successfully' };
+    } catch {
+      throw new NotFoundException('Notification not found');
+    }
   }
 }
