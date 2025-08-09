@@ -10,7 +10,20 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiProperty, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+
+class CategoryDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+}
+
+export class CategoriesResponseDto {
+  @ApiProperty({ type: [CategoryDto] }) // chú ý đây là mảng
+  categories: CategoryDto[];
+}
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -28,25 +41,25 @@ export class PostController {
   }
 
   @Get('category/count/:id')
-  countByCategory(@Param('id') id: string) {
-    return this.postService.countByCategory(id);
+  countByCategory(@Param('id') categoryId: string) {
+    return this.postService.countByCategory(categoryId);
   }
 
   @Get('category/:id')
-  findByCategory(@Param('id') id: string) {
-    return this.postService.findByCategory(id);
+  findByCategory(@Param('id') categoryId: string) {
+    return this.postService.findByCategory(categoryId);
+  }
+
+  @ApiOkResponse({ type: [CategoryDto] }) 
+  @Get(':id/categories')
+  getCategories(@Param('id') postId: string) {
+    return this.postService.findCategoriesByPostId(postId);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postService.findOne(id);
   }
-
-  @Get(':postId/categories')
-getCategories(@Param('postId') postId: string) {
-  return this.postService.findCategoriesByPostId(postId);
-}
-
 
   @Get()
   findAll() {

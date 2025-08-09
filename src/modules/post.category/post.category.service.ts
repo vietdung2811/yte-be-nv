@@ -9,36 +9,40 @@ export class PostCategoryService {
 
   async create(dto: CreatePostCategoryDto) {
     return this.prisma.categories.create({
-      data: {
-        name: dto.name,
-      },
+      data: { name: dto.name },
     });
   }
 
   async findAll() {
-    return this.prisma.categories.findMany({
-      include: {
-        postCategories: {
-          include: { post: true },
-        },
-      },
-    });
+    const categories = await this.prisma.categories.findMany();
+
+    // Lấy danh sách post cho từng category
+    const categoriesWithPosts = await Promise.all(
+      categories.map(async (cat) => {
+        const posts = await this.prisma.posts.findMany({
+          where: { category_id: { has: cat.id } },
+        });
+        return { ...cat, posts };
+      }),
+    );
+
+    return categoriesWithPosts;
   }
 
   async findOne(id: string) {
     const category = await this.prisma.categories.findUnique({
       where: { id },
-      include: {
-        postCategories: {
-          include: { post: true },
-        },
-      },
     });
 
     if (!category) {
       throw new NotFoundException(`Không tìm thấy category với id ${id}`);
     }
-    return category;
+
+    const posts = await this.prisma.posts.findMany({
+      where: { category_id: { has: id } },
+    });
+
+    return { ...category, posts };
   }
 
   async update(id: string, dto: UpdatePostCategoryDto) {
@@ -56,6 +60,16 @@ export class PostCategoryService {
     try {
       await this.prisma.categories.delete({
         where: { id },
+      });
+
+      // Xóa id này khỏi tất cả posts
+      await this.prisma.posts.updateMany({
+        where: { category_id: { has: id } },
+        data: {
+          category_id: {
+            set: [], // hoặc filter bỏ id đó, tuỳ yêu cầu
+          },
+        },
       });
     } catch {
       throw new NotFoundException(`Không tìm thấy category để xóa`);

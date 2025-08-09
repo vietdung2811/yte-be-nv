@@ -13,38 +13,21 @@ export class PostService {
         author: createPostDto.author,
         title: createPostDto.title,
         content: createPostDto.content,
-        createdAt: new Date(),
-        // Nếu muốn gắn category khi tạo
-        postCategories: createPostDto.categoryIds
-          ? {
-              create: createPostDto.categoryIds.map((catId) => ({
-                category: { connect: { id: catId } },
-              })),
-            }
-          : undefined,
+        category_id: createPostDto.categoryIds || [],
+        created_at: new Date(),
       },
     });
   }
 
   async findAll() {
     return this.prisma.posts.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        postCategories: {
-          include: { category: true },
-        },
-      },
+      orderBy: { created_at: 'desc' },
     });
   }
 
   async findOne(id: string) {
     const post = await this.prisma.posts.findUnique({
       where: { id },
-      include: {
-        postCategories: {
-          include: { category: true },
-        },
-      },
     });
     if (!post) throw new NotFoundException(`Post with ID ${id} not found`);
     return post;
@@ -53,56 +36,24 @@ export class PostService {
   async findByCategory(categoryId: string) {
     return this.prisma.posts.findMany({
       where: {
-        postCategories: {
-          some: { categoryId },
-        },
+        category_id: { has: categoryId }, // Prisma array filter
       },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        postCategories: {
-          include: { category: true },
-        },
-      },
+      orderBy: { created_at: 'desc' },
     });
-  }
-
-  async findCategoriesByPostId(postId: string) {
-    const post = await this.prisma.posts.findUnique({
-      where: { id: postId },
-      include: {
-        postCategories: {
-          include: { category: true },
-        },
-      },
-    });
-
-    if (!post) {
-      throw new NotFoundException(`Không tìm thấy post với id: ${postId}`);
-    }
-
-    // Lấy mảng categories
-    return post.postCategories.map((pc) => pc.category);
   }
 
   async countByCategory(categoryId: string) {
     return this.prisma.posts.count({
       where: {
-        postCategories: {
-          some: { categoryId },
-        },
+        category_id: { has: categoryId },
       },
     });
   }
 
   async getLatestThree() {
     return this.prisma.posts.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { created_at: 'desc' },
       take: 3,
-      include: {
-        postCategories: {
-          include: { category: true },
-        },
-      },
     });
   }
 
@@ -114,21 +65,37 @@ export class PostService {
           author: updatePostDto.author,
           title: updatePostDto.title,
           content: updatePostDto.content,
-          // Nếu muốn update category
-          postCategories: updatePostDto.categoryIds
-            ? {
-                deleteMany: {}, // xóa category cũ
-                create: updatePostDto.categoryIds.map((catId) => ({
-                  category: { connect: { id: catId } },
-                })),
-              }
-            : undefined,
+          category_id: updatePostDto.categoryIds || undefined,
+          updated_at: new Date(),
         },
       });
     } catch {
       throw new NotFoundException(`Post #${id} not found`);
     }
   }
+
+  async findCategoriesByPostId(postId: string) {
+  const post = await this.prisma.posts.findUnique({
+    where: { id: postId },
+  });
+
+  if (!post) {
+    throw new NotFoundException(`Post với ID ${postId} không tồn tại`);
+  }
+
+  if (!post.category_id || post.category_id.length === 0) {
+    return [];
+  }
+
+  // Debug thử cái này coi mảng id có đúng ko
+  console.log('Category IDs:', post.category_id);
+
+  return this.prisma.categories.findMany({
+    where: {
+      id: { in: post.category_id },
+    },
+  });
+}
 
   async remove(id: string) {
     try {
