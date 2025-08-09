@@ -22,28 +22,19 @@
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
-
-api for use:
-```bash
-$ /users (new user) liên hệ, đặt lịch khám
-$ /posts (get all post) kiến thức
-$ /posts/category/:id (get post by cat) ấn vào 1 category bất kì trong trang kiến thức, bài đăng
-$ /posts/category/count/:id (count post by cat) danh mục trong trang kiến thức
-$ /posts/latest/3 (3 newest post) bài viết mới nhất trong trang kiến thức
-$ /posts/:id (get post by id) khi chọn 1 bài viết trong trang kiến thức hoặc mấy trang filter
-$ /posts/:id/comments (name, email, phone, content) (post, get cmt by post_id) mục cmt dưới bài viết bất kì 
-```
+Tutorial for local set up
 ## Project setup
 
 ```bash
 $ npm install
 ```
+## Add .env 
 
 ## Compile and run the project
-
 ```bash
-# development
-$ npm run start
+npx prisma generate
+```
+
 
 # watch mode
 $ npm run start:dev
