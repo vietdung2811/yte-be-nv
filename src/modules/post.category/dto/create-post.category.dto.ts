@@ -6,3 +6,24 @@ export class CreatePostCategoryDto {
   @IsString()
   name: string;
 }
+
+// import { IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator';
+
+// export class CreatePostDto {
+//   @IsString()
+//   @IsNotEmpty()
+//   author: string;
+
+//   @IsString()
+//   @IsNotEmpty()
+//   title: string;
+
+//   @IsString()
+//   @IsNotEmpty()
+//   content: string;
+
+//   @IsOptional()
+//   @IsArray()
+//   @IsString({ each: true })
+//   categoryIds?: string[];
+// }

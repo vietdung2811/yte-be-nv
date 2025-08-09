@@ -17,14 +17,22 @@ export class PostCategoryService {
 
   async findAll() {
     return this.prisma.categories.findMany({
-      include: { posts: true }, // nếu muốn lấy luôn bài viết
+      include: {
+        postCategories: {
+          include: { post: true },
+        },
+      },
     });
   }
 
   async findOne(id: string) {
     const category = await this.prisma.categories.findUnique({
       where: { id },
-      include: { posts: true },
+      include: {
+        postCategories: {
+          include: { post: true },
+        },
+      },
     });
 
     if (!category) {
