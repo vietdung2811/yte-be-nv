@@ -17,9 +17,9 @@ datasource db {
 model Posts {
   id         String         @id @default(auto()) @map("_id") @db.ObjectId
   author     String
-  title      String
+  title      String?
   content    String
-  createdAt  DateTime       @default(now())
+  createdAt  DateTime?       @default(now())
   updatedAt  DateTime?      @updatedAt
 
   comments   Comments[]
