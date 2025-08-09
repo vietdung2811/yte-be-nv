@@ -1,47 +1,55 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Category, CategoryDocument } from './schemas/post.category.schema';
+import { PrismaService } from '../../prisma.service';
 import { CreatePostCategoryDto } from './dto/create-post.category.dto';
 import { UpdatePostCategoryDto } from './dto/update-post.category.dto';
 
 @Injectable()
 export class PostCategoryService {
-  constructor(
-    @InjectModel(Category.name)
-    private readonly categoryModel: Model<CategoryDocument>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreatePostCategoryDto): Promise<Category> {
-    const created = new this.categoryModel(dto);
-    return created.save();
+  async create(dto: CreatePostCategoryDto) {
+    return this.prisma.categories.create({
+      data: {
+        name: dto.name,
+      },
+    });
   }
 
-  async findAll(): Promise<Category[]> {
-    return this.categoryModel.find().exec();
+  async findAll() {
+    return this.prisma.categories.findMany({
+      include: { posts: true }, // nếu muốn lấy luôn bài viết
+    });
   }
 
-  async findOne(id: string): Promise<Category> {
-    const category = await this.categoryModel.findById(id).exec();
+  async findOne(id: string) {
+    const category = await this.prisma.categories.findUnique({
+      where: { id },
+      include: { posts: true },
+    });
+
     if (!category) {
       throw new NotFoundException(`Không tìm thấy category với id ${id}`);
     }
     return category;
   }
 
-  async update(id: string, dto: UpdatePostCategoryDto): Promise<Category> {
-    const updated = await this.categoryModel
-      .findByIdAndUpdate(id, dto, { new: true })
-      .exec();
-    if (!updated) {
+  async update(id: string, dto: UpdatePostCategoryDto) {
+    try {
+      return await this.prisma.categories.update({
+        where: { id },
+        data: { name: dto.name },
+      });
+    } catch {
       throw new NotFoundException(`Không tìm thấy category để cập nhật`);
     }
-    return updated;
   }
 
-  async remove(id: string): Promise<void> {
-    const result = await this.categoryModel.findByIdAndDelete(id).exec();
-    if (!result) {
+  async remove(id: string) {
+    try {
+      await this.prisma.categories.delete({
+        where: { id },
+      });
+    } catch {
       throw new NotFoundException(`Không tìm thấy category để xóa`);
     }
   }

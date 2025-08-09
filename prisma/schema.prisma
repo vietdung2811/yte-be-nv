@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+ 
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Posts {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  author     String
+  title      String
+  content    String
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime?      @updatedAt
+
+  comments   Comments[]
+  postCategories PostCategory[]  // quan hệ qua bảng trung gian
+}
+
+model Categories {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  name       String         @unique
+
+  postCategories PostCategory[]
+}
+
+model PostCategory {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+
+  postId     String         @db.ObjectId
+  categoryId String         @db.ObjectId
+
+  post       Posts          @relation(fields: [postId], references: [id])
+  category   Categories     @relation(fields: [categoryId], references: [id])
+}
+
+
+model Comments {
+  id      String     @id @default(auto()) @map("_id") @db.ObjectId
+  content String 
+  postId String   @db.ObjectId
+  post   Posts    @relation(fields: [postId], references: [id])
+
+  userId String   @db.ObjectId
+  users   Users    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+
+
+model Doctors {
+  id String     @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  socialLink String
+
+}
+
+
+model Users {
+  id String     @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  email String @unique
+  phone String?
+  address String
+  appointmentDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+
+  comment Comments[]
+}
+
+
+model Notification {
+  id String     @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}
+

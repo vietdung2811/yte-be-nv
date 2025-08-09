@@ -1,94 +1,79 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Comment, CommentDocument } from './schemas/post.comment.schema';
-import { User, UserDocument } from '../users/schemas/user.schema';
-import { Post, PostDocument } from '../post/schemas/post.schema';
+import { PrismaService } from '../../prisma.service';
 import { CreateCommentDto } from './dto/create-post.comment.dto';
 
 @Injectable()
 export class CommentService {
-  constructor(
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Post.name) private postModel: Model<PostDocument>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async create(postId: string, dto: CreateCommentDto): Promise<Comment> {
-    // Validate ObjectId
-    if (!Types.ObjectId.isValid(postId)) {
-      throw new NotFoundException(`ID post không hợp lệ`);
-    }
-
-    const postExists = await this.postModel.exists({ _id: postId });
+  async create(postId: string, dto: CreateCommentDto) {
+    // Kiểm tra post tồn tại
+    const postExists = await this.prisma.posts.findUnique({
+      where: { id: postId },
+    });
     if (!postExists) {
       throw new NotFoundException(`Post ${postId} không tồn tại`);
     }
 
     // Tìm user theo email hoặc phone
-    let user = await this.userModel.findOne({
-      $or: [{ email: dto.email }, { phone: dto.phone }],
+    let user = await this.prisma.users.findFirst({
+      where: {
+        OR: [{ email: dto.email }, { phone: dto.phone }],
+      },
     });
 
+    // Nếu chưa có thì tạo mới
     if (!user) {
-      user = new this.userModel({
-        name: dto.name,
-        email: dto.email,
-        phone: dto.phone,
-        address: 'N/A',
+      user = await this.prisma.users.create({
+        data: {
+          name: dto.name,
+          email: dto.email,
+          phone: dto.phone,
+          address: 'N/A',
+        },
       });
-      await user.save();
     }
 
-    const comment = new this.commentModel({
-      content: dto.content,
-      postId: new Types.ObjectId(postId),
-      authorId: user._id,
+    // Tạo comment mới
+    return this.prisma.comments.create({
+      data: {
+        content: dto.content,
+        postId: postId,
+        userId: user.id,
+      },
     });
-
-    return comment.save();
   }
 
-  async findAllByPost(postId: string): Promise<Comment[]> {
-    if (!Types.ObjectId.isValid(postId)) {
-      throw new NotFoundException(`ID post không hợp lệ`);
-    }
-
-    return this.commentModel
-      .find({ postId: new Types.ObjectId(postId) })
-      .populate('authorId', 'name email phone')
-      .exec();
+  async findAllByPost(postId: string) {
+    return this.prisma.comments.findMany({
+      where: { postId },
+      include: {
+        users: {
+          select: { name: true, email: true, phone: true },
+        },
+      },
+    });
   }
 
   async countCommentsByPostId(postId: string) {
-  const objectId = new Types.ObjectId(postId);
+    const totalComments = await this.prisma.comments.count({
+      where: { postId },
+    });
 
-  const result = await this.commentModel.aggregate([
-    { $match: { postId: objectId } },
-    {
-      $group: {
-        _id: '$postId',
-        totalComments: { $sum: 1 },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        postId: '$_id',
-        totalComments: 1,
-      },
-    },
-  ]);
+    return { postId, totalComments };
+  }
 
-  return result[0] || { postId, totalComments: 0 };
-}
+  async delete(commentId: string) {
+    const comment = await this.prisma.comments.findUnique({
+      where: { id: commentId },
+    });
 
-
-  async delete(commentId: string): Promise<void> {
-    const comment = await this.commentModel.findById(commentId);
     if (!comment) {
       throw new NotFoundException('Comment không tồn tại');
     }
-    await comment.deleteOne();
+
+    await this.prisma.comments.delete({
+      where: { id: commentId },
+    });
   }
 }
