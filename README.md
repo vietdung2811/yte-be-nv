@@ -32,7 +32,7 @@ $ npm install
 
 ## Compile and run the project
 ```bash
-npx prisma generate
+  npx prisma generate
 ```
 
 
