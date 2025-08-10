@@ -18,7 +18,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory);
 
   app.enableCors({
-    origin: 'https://tienlam03.github.io/', // 👈 FE của bạn
+    origin: 'https://tienlam03.github.io', // 👈 FE của bạn
     credentials: true,
   });
 
